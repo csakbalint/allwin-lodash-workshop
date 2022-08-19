@@ -1,17 +1,12 @@
-# Allwin Git workshop
+# Allwin Lodash workshop
 
 ## Intro
 
-This project meant to be a tutorial for getting basic/advanced knowledge in using git commands. It also covers how to introduce conventional commits and generate changelog.
+This project meant to be a tutorial for getting basic/advanced knowledge in using the lodash libray.
 
-Git is a versioning tool, so it is not only contain the latest version of the software, but every version over the time. It stores the changes in commits, which can be stored on multiple branches.
+Lodash is a utility library, it has a bunch of useful methods to handle various data transformations or evaluations. It applies safeguards to most of its methods to avoid errors in case of invalid values.
 
-Git uses local-remote repository strategy to add the ability for the developers to write their code in a collaborative way.
-Git provides tools to create or manipulate changes and how to put the changes of different developers together.
-
-In this workshop, we are going to learn some commands which might be useful during operating with git.
-
-Let's _git_ some knowledge! 🧐
+Let's _(lo-)DASH_ out some knowledge! 🧐
 
 ## How to use this repository
 
@@ -19,27 +14,39 @@ To start practicing, it is useful to clone this repository and read the README f
 
 ## Table of contents
 
-- [Intro](#intro)
-- [How to use this repository](#how-to-use-this-repository)
-  - [Tools](#tools)
-- [Git commands](#git-commands)
-  - [Git aliases | [Docs](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases)](#git-aliases----docs--https---git-scmcom-book-en-v2-git-basics-git-aliases-)
-  - [Branches](#branches)
-  - [Commits](#commits)
-  - [Logs](#logs)
-  - [Revert](#revert)
-  - [Stash](#stash)
-  - [⭐️ Extra: Bisect | [link](https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination)](#---extra--bisect----link--https---wwwmetaltoadcom-blog-beginners-guide-git-bisect-process-elimination-)
-- [Release and changelog generation](#release-and-changelog-generation)
-  - [Installation](#installation)
-    - [Install dependencies](#install-dependencies)
-    - [Install hooks](#install-hooks)
-    - [Add configurations](#add-configurations)
-  - [Release process](#release-process)
-    - [First release](#first-release)
-    - [Next releases](#next-releases)
-- [Useful links](#useful-links)
-- [Finale](#finale)
+- [Allwin Git workshop](#allwin-git-workshop)
+  - [Intro](#intro)
+  - [How to use this repository](#how-to-use-this-repository)
+  - [Table of contents](#table-of-contents)
+    - [Tools](#tools)
+  - [Useful Lodash methods](#useful-lodash-methods)
+    - [Typecheck](#typecheck)
+    - [isEqual](#isequal)
+    - [groupBy](#groupby)
+    - [compact](#compact)
+    - [map](#map)
+    - [uniq or sortedUniq](#uniq-or-sorteduniq)
+    - [difference](#difference)
+    - [flatten && flattenDeep](#flatten----flattendeep)
+    - [filter && reject](#filter----reject)
+    - [once](#once)
+    - [cloneDeep](#clonedeep)
+    - [omitBy && pickBy](#omitby----pickby)
+    - [camelCase, kebabCase, capitalize etc.](#camelcase--kebabcase--capitalize-etc)
+    - [range](#range)
+    - [debounce](#debounce)
+  - [Worth to mention](#worth-to-mention)
+    - [chunk](#chunk)
+    - [xor, intersection, union](#xor--intersection--union)
+    - [includes](#includes)
+    - [throttle](#throttle)
+    - [memoize](#memoize)
+    - [partition](#partition)
+    - [assign](#assign)
+    - [defaults](#defaults)
+    - [trim](#trim)
+  - [Useful links](#useful-links)
+  - [Finale](#finale)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -49,418 +56,456 @@ It is recommended to use several tools:
 
 - the repository itself cloned to your local environment
 - Visual Studio Code
-- Git Graph VSCode extension
-- installed git command 😅
 
-## Git commands
+## Useful Lodash methods
 
-### Git aliases | [Docs](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases)
+### Typecheck
 
-If you want to speed up writing git commands, you should add aliases to git. Frequently used aliases:
+Check the type of the given value. Handle falsy values too (it has built/in safeguards).
 
-**git checkout**
+```typescript
+_.isArray(value); // check if the value is an array object
 
-```bash
-# setup alias
-git config --global alias.co checkout
-# checkout existing branch
-git co <oldbranch>
-# create new branch
-git co -b <newbranch>
+_.isBoolean(value);
+
+_.isNil(value); // Checks if value is null or undefined.
+
+// and so much more
 ```
 
-**git commit**
+### isEqual
 
-```bash
-# setup alias
-git config --global alias.c commit
-# create a new commit
-git c -m "<message>"
+Performs a deep comparison between two values to determine if they are equivalent.
+
+ℹ️ This method supports comparing arrays, array buffers, booleans, date objects, error objects, maps, numbers, Object objects, regexes, sets, strings, symbols, and typed arrays. Object objects are compared by their own, not inherited, enumerable properties. Functions and DOM nodes are compared by strict equality, i.e. ===.
+
+```typescript
+var object = { a: 1 };
+var other = { a: 1 };
+
+_.isEqual(object, other);
+// => true
+
+object === other;
+// => false
 ```
 
-**git reset HEAD^1 --soft**
+### groupBy
 
-```bash
-# setup alias
-git config --global alias.uncommit 'reset HEAD^1 --soft'
-# remove one commit and add its changes to the staged
-git uncommit
+Creates an object composed of keys generated from the results of running each element of collection thru iteratee. The order of grouped values is determined by the order they occur in collection. The corresponding value of each key is an array of elements responsible for generating the key. The iteratee is invoked with one argument: (value).
+
+```typescript
+_.groupBy([6.1, 4.2, 6.3], Math.floor);
+// => { '4': [4.2], '6': [6.1, 6.3] }
+
+// The `_.property` iteratee shorthand.
+_.groupBy(['one', 'two', 'three'], 'length');
+// => { '3': ['one', 'two'], '5': ['three'] }
 ```
 
-### Branches
+### compact
 
-If you want to create new branches, you may know the `branch` command.
+Creates an array with all falsey values removed. The values false, null, 0, "", undefined, and NaN are falsey.
 
-```bash
-# create a new branch in the local repository
-git branch <new_branch_name>
-# move to the new branch
-git checkout <new_branch_name>
+ℹ️ If you want to remove reference values (object), then use reject.
+
+```typescript
+_.compact([0, 1, false, 2, '', 3]);
+// => [1, 2, 3]
 ```
 
-or the short command with `checkout`.
+### map
 
-```bash
-# create a new branch AND move to the new branch
-git checkout -b <new_branch_name>
-```
+Creates an array of values by running each element in collection thru iteratee. The iteratee is invoked with three arguments:
+(value, index|key, collection).
 
-If you want to delete your obsolete branch, you can always append the `-D` argument to the `branch` command.
-
-```bash
-# delete the branch locally
-git branch -D <obsolete_branch>
-```
-
-If you know that you deleted the branches on the remote repository and you want to apply those changes locally you can use the following command.
-
-```bash
-git fetch --prune
-```
-
-ℹ️ If you want to just start with a blank slate, you the following command.
-
-```bash
-# It destroys every branch except your master branch
-git branch | grep -v "master" | xargs git branch -D
-```
-
-🚨 Only works in linux environment.
-🚨 Be aware if you have different name for your **master** branch like **main**.
-
-### Commits
-
-Standard example when you want to create a new commit with message.
-
-```bash
-# add everything to stage
-git add .
-# create a commit
-git commit -m "<commit_message>"
-```
-
-or the short version.
-
-```bash
-# add everything to stage AND create a commit
-git commit -am "<commit_message"
-```
-
-If you made a typo in the commit message.
-
-```bash
-# append your staged changes to the previous commit and also rename it
-git commit --amend -m "<updated_commit_message>"
-```
-
-or if you just forgot something adding to the commit, you can append the `--no-edit` arguments.
-
-```bash
-# append your staged changes to the previous commit
-git commit --amend --no-edit
-```
-
-**Extra**
-
-If you have already pushed your commits to the remote repository you can also use the `--force` argument with the `push` command.
-
-```bash
-# update the remote history by force
-git push origin <remote_branch> --force
-```
-
-🚨 This will override the remote history, thus it is dangerous and often disabled!
-
-### Logs
-
-To check the latest commits on the branch you can always use the `log` command
-
-```bash
-# check the last commit
-git log -1
-# check the last 3 commit
-git log -3
-```
-
-or even display the logs in a pretty graph format.
-
-```bash
-# print a graph based on your local branches and their commit histories
-git log --decorate --oneline --graph --all
-```
-
-ℹ️ Don't forget to add it as an alias!
-
-```bash
-# setup alias
-git config --global alias.graph 'log --decorate --oneline --graph --all'
-```
-
-ℹ️ It is advised to install the `Git Graph` extension of Visual Studio Code!
-
-### Revert
-
-In case you made a wrong commit and you want to undo your mistakes, you have several options based on if you have already pushed your commit to the remote repository and/or the commit is not on the top of the branch.
-
-If the commit is on the top of your branch you can reset your commit by using the following command
-
-```bash
-# delete the last commit and all of its changes
-git reset HEAD^1 --hard
-```
-
-if you already pushed to your remote branch you have to apply the deletion on the remote as well.
-
-```bash
-# update the remote history by force
-git push origin <remote_branch> --force
-```
-
-🚨 This will override the remote history, thus it is dangerous and often disabled!
-
-If that is not the case, then it is advised to use the `revert` command. By looking at the hash of the right commit you can revert your changes in no time.
-
-```bash
-# find the wrong commit
-git log
-#  create new commit with the opposite changes
-git revert <commit_hash>
-```
-
-It will create a new commit with the opposite changes of the reverted commit.
-
-### Stash
-
-If you don't want to commit your changes, because maybe you forgot to do something else before, you can stash your changes by using the `stash` command.
-
-```bash
-# add changes to the stage
-git add # . or specific files
-# save it for later
-git stash
-# ...later
-# it adds your last stash to the stage and also deletes this stash
-git stash pop
-```
-
-ℹ️ If you use the stash more frequently, you can attach name to them.
-
-```bash
-# stash your staged changes with a specific name
-git stash save <stash_name>
-# ...later
-# to find what is the index of your stash
-git stash list
-# add the changes of the stash to your stage.
-git stash apply <stash_index>
-```
-
-### ⭐️ Extra: Bisect | [link](https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination)
-
-This is not an often used command but can be useful if you want to find an old commit you suspect to be wrong. By starting this command it will jump back and forth between commits and you have evaluate those states to be good or bad. It will logs the hash of the wrong commit. How should you proceed:
-
-```bash
-# start the bisect process
-git bisect start
-# usually if the HEAD commit is wrong
-git bisect bad
-# find a commit where it worked still well
-git bisect good <still_good_commit_id>
-```
-
-The **bisect** process will start jumping from commit-to-commit along the history and on every commit, you can evaluate if that commit was good or bad. The most effective way is, if the tests cover the bad behaviour. In this case you can just run your **test command** on every commit the command jumps to.
-
-```bash
-# run test
-yarn test # or npm run test or anything else
-# if it worked
-git bisect good
-# if not
-git bisect bad
-```
-
-After this, the process jumps to the next commit and you must evaluate it again with the same strategy. In the end the process will tell you, which commit was the wrongdoer.
-
-```bash
-# result can be the following
-caf8c7eb4f9e2aa392ae15aa2a920859c19c43bf is the first bad commit
-commit caf8c7eb4f9e2aa392ae15aa2a920859c19c43bf
-Author: csakbalint <csak.balint@gmail.com>
-Date:   Thu Jul 7 22:49:17 2022 +0200
-
-    chore(test): added environment and scripts
-
- jest.config.js |   13 +
- package.json   |    6 +-
- yarn.lock      | 1897 +++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 1902 insertions(+), 14 deletions(-)
- create mode 100644 jest.config.js
-```
-
-## Release and changelog generation
-
-It's important to provide a good release experience during development, because it helps the other parties to understand, what is the latest state of the software, and how did the code become to that.
-
-ℹ️ This section is not meant to help understanding the whole concept of release strategy but to provide basic tools to introduce it.
-
-### Installation
-
-It might be useful to checkout the `section/conventional-commits` branch, because it contains the necessary changes to introduce the release and versioning
-
-In JavaScript environment, we can use husky, lint-staged, commitlint, conventional-commits, and standard version libraries. With these libraries we can prepare the developers and development environment to be able to create **changelog-ready commits** and generate releases.
-
-What are these libraries and what are they for:
-
-- **husky**: add the ability to use git hooks in Node.js environment
-- **commitlint**: enforce naming conventions on commit messages.
-- **lint-staged** (optional): help executing scripts only on taged files. It uses husky under-the-hood.
-- **standard-version**: generate changelog and release commit. It works with conventional commits.
-
-#### Install dependencies
-
-```bash
-# install dependencies
-yarn add -D @commitlint/cli @commitlint/config-conventional
-yarn add -D husky lint-staged standard-version
-```
-
-#### Install hooks
-
-Create commit message hook file
-
-```bash
-npx husky add .husky/commit-msg "npx --no -- commitlint --edit "${1}"
-```
-
-it will looks like this.
-
-```bash
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-npx --no -- commitlint --edit "${1}"
-```
-
-ℹ️ It should be an executable file, otherwise the git won't run it.
-
-#### Add configurations
-
-Add the following scripts to package.json
-
-```bash
-# extend the scripts in package.json
-"release": "standard-version",
-"release:minor": "standard-version --release-as minor",
-"release:patch": "standard-version --release-as patch",
-"release:major": "standard-version --release-as major"
-# append config to the end of the
-"lint-staged": {
-  "*.{js,ts}": "eslint --fix"
-},
-"husky": {
-  "hooks": {
-    "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-  }
+```typescript
+function square(n) {
+  return n * n;
 }
+
+_.map([4, 8], square);
+// => [16, 64]
+
+_.map({ a: 4, b: 8 }, square);
+// => [16, 64] (iteration order is not guaranteed)
+
+var users = [{ user: 'barney' }, { user: 'fred' }];
+
+// The `_.property` iteratee shorthand.
+_.map(users, 'user');
+// => ['barney', 'fred']
 ```
 
-Create .versionrc
+### uniq or sortedUniq
 
-```bash
-{
-  "types": [
-    {
-      "type": "feat",
-      "section": "Features"
-    },
-    {
-      "type": "fix",
-      "section": "Bug Fixes"
-    },
-    {
-      "type": "chore",
-      "hidden": true
-    },
-    {
-      "type": "docs",
-      "hidden": true
-    },
-    {
-      "type": "style",
-      "hidden": false
-    },
-    {
-      "type": "refactor",
-      "hidden": true
-    },
-    {
-      "type": "perf",
-      "hidden": true
-    },
-    {
-      "type": "test",
-      "hidden": true
-    }
-  ],
-  "commitUrlFormat": "https://github.com/csakbalint/allwin-git-workshop/commit/{{hash}}",
-  "compareUrlFormat": "https://github.com/csakbalint/allwin-git-workshop/compare/{{previousTag}}...{{currentTag}}"
+Creates a duplicate-free version of an array, using SameValueZero for equality comparisons, in which only the first occurrence of each element is kept. The order of result values is determined by the order they occur in the array.
+
+ℹ️ _.sortedUniq is like _.uniq except that it's designed and optimized for sorted arrays.
+
+```typescript
+_.uniq([2, 1, 2]);
+// => [2, 1]
+
+_.sortedUniq([1, 1, 2]);
+// => [1, 2]
+```
+
+### difference
+
+Creates an array of array values not included in the other given arrays using SameValueZero for equality comparisons. The order and references of result values are determined by the first array.
+
+❗️ Unlike \_.pullAll, this method returns a new array.
+
+```typescript
+_.difference([2, 1], [2, 3]);
+// => [1]
+```
+
+### flatten && flattenDeep
+
+Flattens array a single level deep. flattenDeep recursively flattens array.
+
+```typescript
+_.flatten([1, [2, [3, [4]], 5]]);
+// => [1, 2, [3, [4]], 5]
+
+_.flattenDeep([1, [2, [3, [4]], 5]]);
+// => [1, 2, 3, 4, 5]
+```
+
+### filter && reject
+
+Iterates over elements of collection, returning an array of all elements predicate returns truthy for. The predicate is invoked with three arguments: (value, index|key, collection).
+
+ℹ️ Unlike \_.remove, this method returns a new array.
+
+```typescript
+var users = [
+  { user: 'barney', age: 36, active: true },
+  { user: 'fred', age: 40, active: false },
+];
+
+_.filter(users, function (o) {
+  return !o.active;
+});
+// => objects for ['fred']
+
+// The `_.matches` iteratee shorthand.
+_.filter(users, { age: 36, active: true });
+// => objects for ['barney']
+
+// The `_.matchesProperty` iteratee shorthand.
+_.filter(users, ['active', false]);
+// => objects for ['fred']
+
+// The `_.property` iteratee shorthand.
+_.filter(users, 'active');
+// => objects for ['barney']
+```
+
+### once
+
+Creates a function that is restricted to invoking func once. Repeat calls to the function return the value of the first invocation. The func is invoked with the this binding and arguments of the created function.
+
+```typescript
+var initialize = _.once(createApplication);
+initialize();
+initialize();
+// => `createApplication` is invoked once
+```
+
+### cloneDeep
+
+Creates a clone of value recursively.
+
+❗️ Note: This method is loosely based on the structured clone algorithm and supports cloning arrays, array buffers, booleans, date objects, maps, numbers, Object objects, regexes, sets, strings, symbols, and typed arrays. The own enumerable properties of arguments objects are cloned as plain objects. An empty object is returned for uncloneable values such as error objects, functions, DOM nodes, and WeakMaps.
+
+```typescript
+var objects = [{ a: 1 }, { b: 2 }];
+
+var deep = _.cloneDeep(objects);
+console.log(deep[0] === objects[0]);
+// => false
+```
+
+### omitBy && pickBy
+
+Creates an object composed of the object properties predicate returns truthy for. The predicate is invoked with two arguments: (value, key).
+
+ℹ️ omitBy is the opposite of \_.pickBy.
+
+```typescript
+var object = { a: 1, b: '2', c: 3 };
+
+_.pickBy(object, _.isNumber);
+// => { 'a': 1, 'c': 3 }
+
+var object = { a: 1, b: '2', c: 3 };
+
+_.omitBy(object, _.isNumber);
+// => { 'b': '2' }
+```
+
+### camelCase, kebabCase, capitalize etc.
+
+String transformation methods. Convert string to various cases (camelCase, kebabCase), capitalize, convert every characters to lower, or upper etc.
+
+```typescript
+_.camelCase('Foo Bar');
+// => 'fooBar'
+
+_.camelCase('--foo-bar--');
+// => 'fooBar'
+
+_.camelCase('__FOO_BAR__');
+// => 'fooBar'
+
+_.kebabCase('Foo Bar');
+// => 'foo-bar'
+
+_.kebabCase('fooBar');
+// => 'foo-bar'
+
+_.kebabCase('__FOO_BAR__');
+// => 'foo-bar'
+
+_.capitalize('FRED');
+// => 'Fred'
+
+_.toLower('--Foo-Bar--');
+// => '--foo-bar--'
+
+_.toLower('fooBar');
+// => 'foobar'
+
+_.toLower('__FOO_BAR__');
+// => '__foo_bar__'
+```
+
+### range
+
+Creates an array of numbers (positive and/or negative) progressing from start up to, but not including, end. A step of -1 is used if a negative start is specified without an end or step. If end is not specified, it's set to start with start then set to 0
+
+```typescript
+_.range(4);
+// => [0, 1, 2, 3]
+
+_.range(-4);
+// => [0, -1, -2, -3]
+
+_.range(1, 5);
+// => [1, 2, 3, 4]
+```
+
+### debounce
+
+Creates a debounced function that delays invoking func until after wait milliseconds have elapsed since the last time the debounced function was invoked. The debounced function comes with a cancel method to cancel delayed func invocations and a flush method to immediately invoke them. Provide options to indicate whether func should be invoked on the leading and/or trailing edge of the wait timeout. The func is invoked with the last arguments provided to the debounced function. Subsequent calls to the debounced function return the result of the last func invocation.
+
+```typescript
+// Avoid costly calculations while the window size is in flux.
+jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+
+// Invoke `sendMail` when clicked, debouncing subsequent calls.
+jQuery(element).on(
+  'click',
+  _.debounce(sendMail, 300, {
+    leading: true,
+    trailing: false,
+  })
+);
+
+// Ensure `batchLog` is invoked once after 1 second of debounced calls.
+var debounced = _.debounce(batchLog, 250, { maxWait: 1000 });
+var source = new EventSource('/stream');
+jQuery(source).on('message', debounced);
+
+// Cancel the trailing debounced invocation.
+jQuery(window).on('popstate', debounced.cancel);
+```
+
+## Worth to mention
+
+### chunk
+
+Creates an array of elements split into groups the length of size. If array can't be split evenly, the final chunk will be the remaining elements.
+
+```typescript
+_.chunk(['a', 'b', 'c', 'd'], 2);
+// => [['a', 'b'], ['c', 'd']]
+
+_.chunk(['a', 'b', 'c', 'd'], 3);
+// => [['a', 'b', 'c'], ['d']]
+```
+
+### xor, intersection, union
+
+Logical operations on arrays.
+
+Xor creates an array of unique values that is the symmetric difference of the given arrays. The order of result values is determined by the order they occur in the arrays.
+
+Intersection creates an array of unique values that are included in all given arrays using SameValueZero for equality comparisons. The order and references of result values are determined by the first array.
+
+Creates an array of unique values, in order, from all given arrays using SameValueZero for equality comparisons. (Aka `_.uniq(_.concat(arr1, arr2))`)
+
+```typescript
+_.xor([2, 1], [2, 3]);
+// => [1, 3]
+
+_.intersection([2, 1], [2, 3]);
+// => [2]
+
+_.union([2], [1, 2]);
+// => [2, 1]
+```
+
+### includes
+
+Checks if value is in collection. If collection is a string, it's checked for a substring of value, otherwise SameValueZero is used for equality comparisons. If fromIndex is negative, it's used as the offset from the end of collecti
+
+```typescript
+_.includes([1, 2, 3], 1);
+// => true
+
+_.includes([1, 2, 3], 1, 2);
+// => false
+
+_.includes({ a: 1, b: 2 }, 1);
+// => true
+
+_.includes('abcd', 'bc');
+// => true
+```
+
+### throttle
+
+Creates a throttled function that only invokes func at most once per every wait milliseconds. The throttled function comes with a cancel method to cancel delayed func invocations and a flush method to immediately invoke them. Provide options to indicate whether func should be invoked on the leading and/or trailing edge of the wait timeout. The func is invoked with the last arguments provided to the throttled function. Subsequent calls to the throttled function return the result of the last func invocation.
+
+```typescript
+// Avoid excessively updating the position while scrolling.
+jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+
+// Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
+var throttled = _.throttle(renewToken, 300000, { trailing: false });
+jQuery(element).on('click', throttled);
+
+// Cancel the trailing throttled invocation.
+jQuery(window).on('popstate', throttled.cancel);
+```
+
+### memoize
+
+Creates a function that memoizes the result of func. If resolver is provided, it determines the cache key for storing the result based on the arguments provided to the memoized function. By default, the first argument provided to the memoized function is used as the map cache key. The func is invoked with the this binding of the memoized function.
+
+ℹ️ The cache is exposed as the cache property on the memoized function. Its creation may be customized by replacing the \_.memoize.Cache constructor with one whose instances implement the Map method interface of clear, delete, get, has, and set.
+
+```typescript
+var object = { a: 1, b: 2 };
+var other = { c: 3, d: 4 };
+
+var values = _.memoize(_.values);
+values(object);
+// => [1, 2]
+
+values(other);
+// => [3, 4]
+
+object.a = 2;
+values(object);
+// => [1, 2]
+
+// Modify the result cache.
+values.cache.set(object, ['a', 'b']);
+values(object);
+// => ['a', 'b']
+
+// Replace `_.memoize.Cache`.
+_.memoize.Cache = WeakMap;
+```
+
+### partition
+
+Creates an array of elements split into two groups, the first of which contains elements predicate returns truthy for, the second of which contains elements predicate returns falsey for. The predicate is invoked with one argument: (value).
+
+```typescript
+var users = [
+  { user: 'barney', age: 36, active: false },
+  { user: 'fred', age: 40, active: true },
+  { user: 'pebbles', age: 1, active: false },
+];
+
+_.partition(users, function (o) {
+  return o.active;
+});
+// => objects for [['fred'], ['barney', 'pebbles']]
+
+// The `_.matches` iteratee shorthand.
+_.partition(users, { age: 1, active: false });
+// => objects for [['pebbles'], ['barney', 'fred']]
+
+// The `_.matchesProperty` iteratee shorthand.
+_.partition(users, ['active', false]);
+// => objects for [['barney', 'pebbles'], ['fred']]
+
+// The `_.property` iteratee shorthand.
+_.partition(users, 'active');
+// => objects for [['fred'], ['barney', 'pebbles']]
+```
+
+### assign
+
+Assigns own enumerable string keyed properties of source objects to the destination object. Source objects are applied from left to right. Subsequent sources overwrite property assignments of previous sources.
+
+ℹ️ This method mutates object and is loosely based on Object.assign.
+
+```typescript
+function Foo() {
+  this.a = 1;
 }
+
+function Bar() {
+  this.c = 3;
+}
+
+Foo.prototype.b = 2;
+Bar.prototype.d = 4;
+
+_.assign({ a: 0 }, new Foo(), new Bar());
+// => { 'a': 1, 'c': 3 }
+Try in REPL;
 ```
 
-ℹ️ You can configure it freely, based on what you want to be in the changelog.
+### defaults
 
-Create `commitlint.config.js`
+Assigns own and inherited enumerable string keyed properties of source objects to the destination object for all destination properties that resolve to undefined. Source objects are applied from left to right. Once a property is set, additional values of the same property are ignored.
 
-```bash
-module.exports = { extends: ['@commitlint/config-conventional'] };
+ℹ️ This method mutates object.
+
+```typescript
+_.defaults({ a: 1 }, { b: 2 }, { a: 3 });
+// => { 'a': 1, 'b': 2 }
 ```
 
-### Release process
+### trim
 
-If you want to create a release with the `standard-release` library, it will generate a changelog, based on the previous commit history and creates a commit with the first version found in the package.json. It also attach a version tag to it.
+Removes leading and trailing whitespace or specified characters from string.
 
-#### First release
+```typescript
+_.trim('  abc  ');
+// => 'abc'
 
-For the first you want to execute the following command.
+_.trim('-_-abc-_-', '_-');
+// => 'abc'
 
-```bash
-# create your very own first release
-yarn release --first release
-# push the release commit with the tag to the remote branch
-git push origin <remote_branch> --tags
+_.map(['  foo  ', '  bar  '], _.trim);
+// => ['foo', 'bar']
 ```
-
-🚨 It is important to push the tags, in case you are not the only developer making releases, because standard-version rely upon tags during releas.
-
-#### Next releases
-
-Whenever you want to create a release, uou must determine, how has your code been changes:
-
-- increase the major version (x.0.0), if any of your existing and used functionalities has been broken.
-- increate the minor version (0.x.0), if you introduce new funtionality or feature
-- increate the patch version (0.0.x), if fixed one of your broken features.
-
-ℹ️ To fully understand the release process, you should understand the semantic versioning. You can read more about it [here](https://semver.org/).
-
-```bash
-# increase major version
-yarn release:major
-# increate minor version
-yarn release:minor
-# increate patch version
-yarn release:patch
-```
-
-It will automatically generates the changes of the changelog, add the option to edit it, then creates a commit and attach a tag.
-
-🚨 Be aware, `standard-version` calculates the changes from the previous tag.
 
 ## Useful links
 
-- [Fireship tutorial video](https://www.youtube.com/watch?v=ecK3EnyGD8o)
-- [Git Book](https://git-scm.com/book/en/v2)
-- [Semantic versioning](https://semver.org/)
-- [Convention commits cheatsheet](https://cheatography.com/albelop/cheat-sheets/conventional-commits/)
+- [Lodash documentation](https://lodash.com/docs/4.17.15)
+- [Lodash es for code-split](https://www.npmjs.com/package/lodash-es)
+- [Difference between debounce and throttle](https://css-tricks.com/debouncing-throttling-explained-examples/)
 
 ## Finale
 
